@@ -1,15 +1,13 @@
-FROM gradle:8.5-jdk17-alpine AS build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
-COPY build.gradle settings.gradle gradle.properties ./
-COPY gradlew ./
-COPY gradle ./gradle
-RUN ./gradlew --no-daemon dependencies || true
+COPY pom.xml .
+RUN mvn -q -DskipTests dependency:go-offline
 COPY src ./src
-RUN ./gradlew --no-daemon bootJar -x test
+RUN mvn -DskipTests clean package
 
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 ENV JAVA_OPTS=""
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
