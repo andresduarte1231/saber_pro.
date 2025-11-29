@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Resultado - Estudiante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --primary-green: #7CB342; --dark-green: #558B2F; --white: #FFFFFF; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; }
+        .navbar { background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 1rem 0; }
+        .navbar-brand { font-weight: 700; font-size: 1.5rem; color: var(--white) !important; }
+        .navbar-nav .nav-link { color: rgba(255,255,255,0.9) !important; font-weight: 500; padding: 0.8rem 1.2rem !important; transition: all 0.3s ease; border-radius: 8px; margin: 0 5px; }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active { background: rgba(255,255,255,0.15); color: var(--white) !important; }
+        .container { max-width: 1400px; padding: 40px 20px; }
+        .hero-section { background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); padding: 40px; border-radius: 25px; color: white; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(124, 179, 66, 0.3); text-align: center; }
+        .hero-section h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 10px; }
+        .score-card { background: white; border-radius: 20px; padding: 50px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); margin-bottom: 30px; text-align: center; border-top: 5px solid var(--primary-green); }
+        .score-value { font-size: 5rem; font-weight: 900; color: var(--primary-green); margin: 20px 0; }
+        .competence-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); margin-bottom: 20px; transition: all 0.3s ease; }
+        .competence-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        .competence-title { font-weight: 700; color: #212121; margin-bottom: 15px; font-size: 1.1rem; }
+        .competence-score { font-size: 2.5rem; font-weight: 700; color: var(--primary-green); }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/estudiante/dashboard}">
+                <i class="fas fa-graduation-cap"></i> Sistema Saber Pro UTS
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/estudiante/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/estudiante/resultado}">
+                            <i class="fas fa-chart-line"></i> Mi Resultado
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <form th:action="@{/logout}" method="post" style="display: inline;">
+                            <button type="submit" class="nav-link" style="border: none; background: none; cursor: pointer;">
+                                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" th:if="${resultado != null}">
+        <div class="hero-section">
+            <h1><i class="fas fa-chart-line"></i> Mi Resultado Saber Pro</h1>
+            <p style="font-size: 1.2rem;">ICFES - Pruebas Saber Pro</p>
+        </div>
+
+        <!-- Puntaje Global -->
+        <div class="score-card">
+            <h3 style="color: #757575; margin-bottom: 20px;">Puntaje Global</h3>
+            <div class="score-value" th:text="${resultado.puntajeGlobal}">0</div>
+            <div style="margin-top: 20px;">
+                <span th:if="${resultado.puntajeGlobal >= 241}" style="display: inline-block; background: #28a745; color: white; padding: 12px 30px; border-radius: 10px; font-size: 1.2rem; font-weight: 600;">
+                    <i class="fas fa-trophy"></i> SOBRESALIENTE
+                </span>
+                <span th:if="${resultado.puntajeGlobal >= 211 && resultado.puntajeGlobal <= 240}" style="display: inline-block; background: #ffc107; color: white; padding: 12px 30px; border-radius: 10px; font-size: 1.2rem; font-weight: 600;">
+                    <i class="fas fa-medal"></i> INTERMEDIO
+                </span>
+                <span th:if="${resultado.puntajeGlobal >= 180 && resultado.puntajeGlobal <= 210}" style="display: inline-block; background: #17a2b8; color: white; padding: 12px 30px; border-radius: 10px; font-size: 1.2rem; font-weight: 600;">
+                    <i class="fas fa-check-circle"></i> BÁSICO
+                </span>
+            </div>
+        </div>
+
+        <!-- Desglose por Competencias -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 8px 24px rgba(0,0,0,0.08);">
+                    <div style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+                        <h5 style="margin: 0; font-weight: 700;">
+                            <i class="fas fa-list"></i> Desglose por Competencias
+                        </h5>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="competence-card">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="competence-title">
+                                        <i class="fas fa-pencil-alt" style="color: #007bff;"></i>
+                                        Comunicación Escrita
+                                    </div>
+                                    <span class="competence-score" th:text="${resultado.comunicacionEscrita ?: 'N/A'}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="competence-card">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="competence-title">
+                                        <i class="fas fa-calculator" style="color: #28a745;"></i>
+                                        Razonamiento Cuantitativo
+                                    </div>
+                                    <span class="competence-score" th:text="${resultado.razonamientoCuantitativo ?: 'N/A'}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="competence-card">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="competence-title">
+                                        <i class="fas fa-book" style="color: #17a2b8;"></i>
+                                        Lectura Crítica
+                                    </div>
+                                    <span class="competence-score" th:text="${resultado.lecturaCritica ?: 'N/A'}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="competence-card">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="competence-title">
+                                        <i class="fas fa-users" style="color: #ffc107;"></i>
+                                        Competencias Ciudadanas
+                                    </div>
+                                    <span class="competence-score" th:text="${resultado.competenciasCiudadanas ?: 'N/A'}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="competence-card">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="competence-title">
+                                        <i class="fas fa-globe" style="color: #dc3545;"></i>
+                                        Inglés
+                                    </div>
+                                    <span class="competence-score" th:text="${resultado.ingles ?: 'N/A'}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 8px 24px rgba(0,0,0,0.08);">
+                    <div style="padding: 20px; margin-bottom: 20px;">
+                        <h5 style="margin: 0; font-weight: 700; color: #212121;">
+                            <i class="fas fa-chart-bar"></i> Visualización de Resultados
+                        </h5>
+                    </div>
+                    <div>
+                        <canvas id="resultadosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <a th:href="@{/estudiante/dashboard}" style="display: inline-block; padding: 15px 40px; background: #6c757d; color: white; border-radius: 12px; text-decoration: none; font-weight: 600; margin-right: 10px; transition: all 0.3s ease;">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                </a>
+                <a th:href="@{/estudiante/beneficios}" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
+                    <i class="fas fa-award"></i> Ver Mis Beneficios
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sin Resultado -->
+    <div class="container mt-5" th:if="${mensaje != null}">
+        <div class="alert alert-info text-center p-5" style="border-radius: 20px; border-left: 8px solid #17a2b8;">
+            <i class="fas fa-info-circle fa-3x mb-3" style="color: #17a2b8;"></i>
+            <h4 th:text="${mensaje}"></h4>
+            <a th:href="@{/estudiante/dashboard}" style="display: inline-block; margin-top: 20px; padding: 15px 40px; background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600;">
+                <i class="fas fa-home"></i> Volver al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const resultado = /*[[${resultado}]]*/ null;
+        
+        if (resultado) {
+            const ctx = document.getElementById('resultadosChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Com. Escrita', 'Razon. Cuantitativo', 'Lect. Crítica', 'Comp. Ciudadanas', 'Inglés'],
+                    datasets: [{
+                        label: 'Puntajes',
+                        data: [
+                            resultado.comunicacionEscrita || 0,
+                            resultado.razonamientoCuantitativo || 0,
+                            resultado.lecturaCritica || 0,
+                            resultado.competenciasCiudadanas || 0,
+                            resultado.ingles || 0
+                        ],
+                        backgroundColor: [
+                            'rgba(0, 123, 255, 0.7)',
+                            'rgba(40, 167, 69, 0.7)',
+                            'rgba(23, 162, 184, 0.7)',
+                            'rgba(255, 193, 7, 0.7)',
+                            'rgba(220, 53, 69, 0.7)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>
