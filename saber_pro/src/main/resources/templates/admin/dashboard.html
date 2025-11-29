@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrador - Saber Pro UTS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #7CB342;
+            --dark-green: #558B2F;
+            --light-green: #9CCC65;
+            --accent-orange: #FF6F00;
+            --dark-gray: #263238;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navbar Profesional */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--white) !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i {
+            font-size: 2rem;
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            padding: 0.8rem 1.2rem !important;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0 5px;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: var(--white) !important;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .dropdown-item {
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white !important;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            padding: 40px 20px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            padding: 40px;
+            border-radius: 25px;
+            color: white;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(124, 179, 66, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            position: relative;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+            border: none;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-green) 0%, var(--accent-orange) 100%);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .icon-primary {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white;
+        }
+
+        .icon-success {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            color: white;
+        }
+
+        .icon-warning {
+            background: linear-gradient(135deg, #FFC107 0%, #F57F17 100%);
+            color: white;
+        }
+
+        .icon-danger {
+            background: linear-gradient(135deg, #F44336 0%, #C62828 100%);
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            color: #757575;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #212121;
+            margin-bottom: 15px;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            color: #757575;
+        }
+
+        /* Action Cards */
+        .action-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-decoration: none;
+        }
+
+        .action-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .action-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #212121;
+            margin-bottom: 10px;
+        }
+
+        .action-description {
+            font-size: 0.9rem;
+            color: #757575;
+        }
+
+        /* Buttons */
+        .btn-modern {
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary-modern {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(124, 179, 66, 0.3);
+        }
+
+        .btn-primary-modern:hover {
+            box-shadow: 0 6px 20px rgba(124, 179, 66, 0.4);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .card-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-graduation-cap"></i> Sistema Saber Pro UTS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/admin/dashboard}">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/usuarios}">
+                            <i class="fas fa-users"></i> Usuarios
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                           data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> <span th:text="${username}"></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/admin/cambiar-contrasena}">
+                                    <i class="fas fa-key"></i> Cambiar Contraseña
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" style="display: inline;">
+                                    <button type="submit" class="dropdown-item" style="border: none; background: none; cursor: pointer; text-align: left; width: 100%;">
+                                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1><i class="fas fa-tachometer-alt"></i> Dashboard Administrador</h1>
+            <p>Bienvenido al panel de control y administración del sistema</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="card-icon icon-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-title">Total Usuarios</div>
+                    <div class="card-value" th:text="${totalUsuarios}">0</div>
+                    <div class="card-description">Usuarios registrados en el sistema</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="card-icon icon-success">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="card-title">Estudiantes</div>
+                    <div class="card-value" th:text="${totalEstudiantes}">0</div>
+                    <div class="card-description">Estudiantes activos</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="card-icon icon-warning">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="card-title">Coordinadores</div>
+                    <div class="card-value" th:text="${totalCoordinadores}">0</div>
+                    <div class="card-description">Coordinadores del sistema</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="card-icon icon-danger">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="card-title">Administradores</div>
+                    <div class="card-value">1</div>
+                    <div class="card-description">Administradores del sistema</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 style="margin-bottom: 20px; color: #212121;">
+                    <i class="fas fa-bolt" style="color: var(--accent-orange);"></i> Acciones Rápidas
+                </h3>
+            </div>
+            <div class="col-md-4">
+                <a th:href="@{/admin/usuarios/nuevo}" class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="action-title">Nuevo Usuario</div>
+                    <div class="action-description">Crear un nuevo usuario en el sistema</div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a th:href="@{/admin/usuarios}" class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <div class="action-title">Ver Usuarios</div>
+                    <div class="action-description">Gestionar todos los usuarios</div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a th:href="@{/admin/cambiar-contrasena}" class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="action-title">Cambiar Contraseña</div>
+                    <div class="action-description">Actualizar tu contraseña</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Users Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="dashboard-card" style="padding: 0; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); padding: 20px 30px; margin: 0;">
+                        <h5 style="margin: 0; color: white; font-weight: 700;">
+                            <i class="fas fa-users"></i> Usuarios Recientes
+                        </h5>
+                    </div>
+                    <div style="padding: 30px;">
+                        <div class="table-responsive">
+                            <table class="table" style="margin: 0;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Usuario</th>
+                                        <th>Nombre Completo</th>
+                                        <th>Rol</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="usuario : ${usuarios}">
+                                        <td th:text="${usuario.id}"></td>
+                                        <td>
+                                            <i class="fas fa-user-circle" style="color: var(--primary-green);"></i>
+                                            <span th:text="${usuario.username}"></span>
+                                        </td>
+                                        <td th:text="${usuario.nombreCompleto}"></td>
+                                        <td>
+                                            <span th:if="${usuario.role.name() == 'ADMIN'}" class="badge badge-danger">
+                                                <i class="fas fa-crown"></i> Admin
+                                            </span>
+                                            <span th:if="${usuario.role.name() == 'COORDINADOR'}" class="badge badge-warning">
+                                                <i class="fas fa-user-tie"></i> Coordinador
+                                            </span>
+                                            <span th:if="${usuario.role.name() == 'ESTUDIANTE'}" class="badge badge-success">
+                                                <i class="fas fa-user-graduate"></i> Estudiante
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${usuario.activo}" class="badge badge-success">
+                                                <i class="fas fa-check"></i> Activo
+                                            </span>
+                                            <span th:unless="${usuario.activo}" class="badge badge-secondary">
+                                                <i class="fas fa-times"></i> Inactivo
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/admin/usuarios/editar/{id}(id=${usuario.id})}" 
+                                               class="btn-modern btn-primary-modern btn-sm" 
+                                               style="padding: 8px 20px; font-size: 0.85rem;"
+                                               title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a th:href="@{/admin/usuarios/eliminar/{id}(id=${usuario.id})}" 
+                                               class="btn-modern btn-sm" 
+                                               style="padding: 8px 20px; font-size: 0.85rem; background: linear-gradient(135deg, #F44336 0%, #C62828 100%); color: white;"
+                                               onclick="return confirm('¿Está seguro de eliminar este usuario?')"
+                                               title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

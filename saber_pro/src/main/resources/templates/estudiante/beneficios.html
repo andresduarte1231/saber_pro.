@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Beneficios - Estudiante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary-green: #7CB342; --dark-green: #558B2F; --accent-orange: #FF6F00; --white: #FFFFFF; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; }
+        .navbar { background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 1rem 0; }
+        .navbar-brand { font-weight: 700; font-size: 1.5rem; color: var(--white) !important; }
+        .navbar-nav .nav-link { color: rgba(255,255,255,0.9) !important; font-weight: 500; padding: 0.8rem 1.2rem !important; transition: all 0.3s ease; border-radius: 8px; margin: 0 5px; }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active { background: rgba(255,255,255,0.15); color: var(--white) !important; }
+        .container { max-width: 1200px; padding: 40px 20px; }
+        .hero-section { background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); padding: 40px; border-radius: 25px; color: white; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(124, 179, 66, 0.3); text-align: center; }
+        .hero-section h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 10px; }
+        .benefit-card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); margin-bottom: 30px; border-left: 8px solid var(--primary-green); }
+        .benefit-header { background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; text-align: center; }
+        .benefit-item { display: flex; align-items: center; padding: 20px; background: #f8f9fa; border-radius: 12px; margin-bottom: 15px; }
+        .benefit-icon { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; margin-right: 20px; }
+        .benefit-content { flex: 1; }
+        .benefit-title { font-weight: 700; color: #212121; font-size: 1.1rem; margin-bottom: 5px; }
+        .benefit-description { color: #757575; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/estudiante/dashboard}">
+                <i class="fas fa-graduation-cap"></i> Sistema Saber Pro UTS
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/estudiante/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/estudiante/beneficios}">
+                            <i class="fas fa-award"></i> Mis Beneficios
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <form th:action="@{/logout}" method="post" style="display: inline;">
+                            <button type="submit" class="nav-link" style="border: none; background: none; cursor: pointer;">
+                                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" th:if="${beneficio != null}">
+        <div class="hero-section">
+            <h1><i class="fas fa-trophy"></i> ¡Felicitaciones!</h1>
+            <p style="font-size: 1.2rem;">Has obtenido un beneficio según tu puntaje Saber Pro</p>
+        </div>
+
+        <div class="benefit-card">
+            <div class="benefit-header">
+                <h2 style="margin: 0; font-weight: 900;">
+                    <i class="fas fa-award"></i>
+                    <span th:text="${beneficio.nombreBeneficio}"></span>
+                </h2>
+            </div>
+
+            <div style="padding: 30px;">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-3 text-center">
+                        <div class="benefit-icon" style="width: 100px; height: 100px; font-size: 3rem;">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <h4 style="font-weight: 700; margin-bottom: 15px;">Descripción del Beneficio</h4>
+                        <p style="font-size: 1.1rem; color: #555;" th:text="${beneficio.descripcion}"></p>
+                    </div>
+                </div>
+
+                <hr style="margin: 30px 0; border-top: 2px solid #e0e0e0;">
+
+                <h5 style="font-weight: 700; margin-bottom: 20px;">
+                    <i class="fas fa-check-double" style="color: var(--primary-green);"></i> Detalles de tu Beneficio:
+                </h5>
+
+                <div class="row g-4">
+                    <div class="col-md-6" th:if="${beneficio.notaSeminario}">
+                        <div style="padding: 20px; border: 2px solid var(--primary-green); border-radius: 15px; background: #f8f9fa; height: 100%;">
+                            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                                <div style="width: 60px; height: 60px; background: var(--primary-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-right: 15px;">
+                                    <i class="fas fa-graduation-cap" style="font-size: 1.8rem;"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color: #757575; margin-bottom: 5px;">Nota de Seminario</h6>
+                                    <h2 style="font-weight: 900; margin: 0; color: var(--primary-green);" th:text="${beneficio.notaSeminario}"></h2>
+                                </div>
+                            </div>
+                            <p style="margin: 0; font-size: 0.9rem; color: #757575;">
+                                <i class="fas fa-info-circle"></i>
+                                Se exonera de la entrega del informe final de trabajo de grado
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" th:if="${beneficio.porcentajeBecaDerechos > 0}">
+                        <div style="padding: 20px; border: 2px solid var(--accent-orange); border-radius: 15px; background: #f8f9fa; height: 100%;">
+                            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                                <div style="width: 60px; height: 60px; background: var(--accent-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-right: 15px;">
+                                    <i class="fas fa-percent" style="font-size: 1.8rem;"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color: #757575; margin-bottom: 5px;">Beca Derechos de Grado</h6>
+                                    <h2 style="font-weight: 900; margin: 0; color: var(--accent-orange);" th:text="${beneficio.porcentajeBecaDerechos + '%'}"></h2>
+                                </div>
+                            </div>
+                            <p style="margin: 0; font-size: 0.9rem; color: #757575;">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Descuento sobre el valor total de derechos de grado
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div style="padding: 20px; border: 2px solid #2196F3; border-radius: 15px; background: #f8f9fa;">
+                            <h6 style="font-weight: 700; margin-bottom: 15px;">
+                                <i class="fas fa-clipboard-check" style="color: #2196F3;"></i> 
+                                Requisitos para hacer efectivo el beneficio:
+                            </h6>
+                            <ul style="margin: 0; padding-left: 20px;">
+                                <li style="margin-bottom: 8px;">Presentar copia del resultado oficial ICFES</li>
+                                <li style="margin-bottom: 8px;">Solicitar el beneficio en la Coordinación Académica</li>
+                                <li style="margin-bottom: 0;">Cumplir con todos los requisitos académicos del programa</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info" style="margin-top: 30px; border-radius: 12px; border-left: 4px solid #2196F3;" role="alert">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Nota:</strong> Este beneficio se otorga según el 
+                    <strong>Acuerdo No. 01-009 (22 de abril de 2024)</strong> del Consejo Directivo UTS
+                </div>
+            </div>
+        </div>
+
+        <!-- Tu Puntaje -->
+        <div class="row mb-4">
+            <div class="col-md-10 offset-md-1">
+                <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); text-align: center;">
+                    <h5 style="color: #757575; margin-bottom: 15px;">Tu Puntaje Global Saber Pro</h5>
+                    <h1 style="font-size: 4rem; font-weight: 900; color: var(--primary-green); margin: 0;" th:text="${resultado.puntajeGlobal}"></h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <a th:href="@{/estudiante/dashboard}" style="display: inline-block; padding: 15px 40px; background: #6c757d; color: white; border-radius: 12px; text-decoration: none; font-weight: 600; margin-right: 10px; transition: all 0.3s ease;">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                </a>
+                <a th:href="@{/estudiante/resultado}" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
+                    <i class="fas fa-chart-line"></i> Ver Mi Resultado
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sin Beneficio -->
+    <div class="container mt-5" th:if="${mensaje != null}">
+        <div class="alert alert-info text-center p-5" style="border-radius: 20px; border-left: 8px solid #2196F3;">
+            <i class="fas fa-info-circle fa-3x mb-3" style="color: #2196F3;"></i>
+            <h4 th:text="${mensaje}"></h4>
+            <p class="text-muted">Los beneficios se asignan automáticamente según tu puntaje Saber Pro</p>
+            <a th:href="@{/estudiante/dashboard}" style="display: inline-block; margin-top: 20px; padding: 15px 40px; background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600;">
+                <i class="fas fa-home"></i> Volver al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
